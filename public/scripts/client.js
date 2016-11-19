@@ -4,9 +4,9 @@ $(document).ready(function () {
 	// add a book
 	$('#addTask').on('click', addTask);
 	// delete a book
-	$("#deleteTask").on('click', '.delete', deleteTask);
+	$("#taskList").on('click', '.delete', deleteTask);
 	// update a book
-	$("#updateTask").on('click', '.update', updateTask);
+	$("#taskList").on('click', '.update', updateTask);
 });
 
 // Get tasks and append
@@ -14,7 +14,7 @@ function getTasks() {
 	$.ajax({
 		type: 'GET',
 		url: '/tasks',
-		success: function (task) {
+		success: function (tasks) {
 			appendTask(task);
 		},
 		error: function () {
@@ -81,9 +81,9 @@ function updateTask() {
 	$.ajax({
 		type: 'PUT',
 		url: '/change/' + id,
-		data: book,
+		data: task,
 		success: function (result) {
-			console.log('updated!!!!');
+			console.log('yo, you got updated');
 			getBooks();
 		},
 		error: function (result) {
@@ -91,3 +91,20 @@ function updateTask() {
 		}
 	});
 } // end update function
+
+function appendTask(task) {
+	$("#taskList").empty();
+
+	for (var i = 0; i < task.length; i++) {
+		$("#taskList").append('<div class="row book"></div>');
+		$el = $('#taskList').children().last();
+		var task = books[i];
+		$el.data('id', book.id);
+		console.log("Date from DB: ", book.published);
+		$el.append('<input type="text" name="task" value="' + tasks.task + '" />');
+		$el.append('<input type="text" name="author" value="' + book.author + '" />');
+
+		$el.append('<button class="update">Update</button>');
+		$el.append('<button class="delete">Delete</button>');
+	}
+}
