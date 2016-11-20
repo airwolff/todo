@@ -20,7 +20,6 @@ function getTasks() {
 		error: function () {
 			console.log('Database error');
 		}
-
 	});
 }
 
@@ -57,12 +56,12 @@ function deleteTasks() {
 
 	$.ajax({
 		type: 'DELETE',
-		url: '/tasks/' + id,
+		url: '/change/' + id,
 		success: function (result) {
 			getTasks();
 		},
 		error: function (result) {
-			console.log('tasks not deleted.');
+			console.log('task not deleted.');
 		}
 	});
 } // end delete function
@@ -71,15 +70,15 @@ function updateTasks() {
 	var id = $(this).parent().data('id');
 	console.log(id);
 
-	var tasks = {};
+	var chanageTask = {};
 
 	var fields = $(this).parent().children().serializeArray();
 
 	fields.forEach(function (field) {
-		tasks[field.name] = field.value;
+		chanageTask[field.name] = field.value;
 	});
 
-	console.log(tasks);
+	console.log(chanageTask);
 
 	$.ajax({
 		type: 'PUT',

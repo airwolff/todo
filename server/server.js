@@ -3,7 +3,7 @@ var app = express();
 var path = require('path');
 var bodyParser = require('body-parser');
 var tasks = require('./routes/tasks');
-var change = require('./routes/change')
+var change = require('./routes/change');
 
 app.use(bodyParser.urlencoded({
 	extended: true

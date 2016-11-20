@@ -22,9 +22,7 @@ router.get('/', function (req, res) {
 				res.sendStatus(500);
 			}
 			res.send(result.rows);
-
 		});
-
 	});
 }); // ends get route
 
@@ -43,7 +41,7 @@ router.post('/', function (req, res) {
 		// create new tasks
 		client.query(
 			'INSERT INTO tasks (task, complete) ' +
-			'VALUES ($1, $2)', [newTask.title, newTask.complete],
+			'VALUES ($1, $2)', [newTask.task, newTask.complete],
 			function (err, result) {
 				done();
 
