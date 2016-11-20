@@ -1,5 +1,4 @@
-var express = require('express');
-var router = express.Router();
+var router = require('express').Router();
 var pg = require('pg');
 var connectionString = 'postgres://localhost:5432/git_r_dun';
 
@@ -14,15 +13,16 @@ router.get('/', function (req, res) {
 			res.sendStatus(500);
 		}
 
-		client.query('SELECT * FROM tasks', function (err, result) {
-			done(); // closes the connection.
+		client.query('SELECT * FROM tasks',
+			function (err, result) {
+				done(); // closes the connection.
 
-			if (err) {
-				console.log('select query error: ', err);
-				res.sendStatus(500);
-			}
-			res.send(result.rows);
-		});
+				if (err) {
+					console.log('select query error: ', err);
+					res.sendStatus(500);
+				}
+				res.send(result.rows);
+			});
 	});
 }); // ends get route
 
@@ -38,10 +38,9 @@ router.post('/', function (req, res) {
 			res.sendStatus(500);
 		}
 
-		// create new tasks
+		// create new tasks, requires only task, default of complete is false
 		client.query(
-			'INSERT INTO tasks (task, complete) ' +
-			'VALUES ($1, $2)', [newTask.task, newTask.complete],
+			'INSERT INTO tasks (task) VALUES ($1) RETURNING *;', [newTask.task],
 			function (err, result) {
 				done();
 
@@ -49,7 +48,7 @@ router.post('/', function (req, res) {
 					console.log('insert query error: ', err);
 					res.sendStatus(500);
 				} else {
-					res.sendStatus(201);
+					res.send(result.rows);
 				}
 			});
 	});
@@ -57,7 +56,7 @@ router.post('/', function (req, res) {
 
 // delete route
 router.delete('/:id', function (req, res) {
-	taskID = req.params.id;
+	var taskID = req.params.id;
 
 	console.log('tasks id to delete: ', taskID);
 
@@ -83,8 +82,9 @@ router.delete('/:id', function (req, res) {
 
 // update tasks route
 router.put('/:id', function (req, res) {
-	taskID = req.params.id;
-	changeTask = req.body;
+	var taskID = req.params.id;
+	var changeTask = req.body.task;
+	var complete = req.body.complete;
 
 	console.log('updating changeTask ', changeTask);
 
@@ -96,16 +96,17 @@ router.put('/:id', function (req, res) {
 
 		// query to update tasks
 		client.query(
-			'UPDATE tasks SET task=$1, complete=$2' +
-			' WHERE id=$3',
+			'UPDATE tasks SET task=$1, complete=$2 WHERE id=$3 RETURNING *',
 			// array of values to use in the query above
-      [changeTask.task, changeTask.complete, taskID],
+      [changeTask, complete, taskID],
 			function (err, result) {
+				done()
 				if (err) {
 					console.log('update error: ', err);
 					res.sendStatus(500);
 				} else {
-					res.sendStatus(200);
+					console.log("result.rows", result.rows);
+					res.send(result.rows);
 				}
 			});
 	});
