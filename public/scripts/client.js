@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	getTasks();
+	getToDo();
 
 	// add tasks
 	$('#submitTasks').on('click', submitToDo);
@@ -7,18 +7,21 @@ $(document).ready(function () {
 	$("#tasksList").on('click', '.delete', deleteTasks);
 	// update tasks
 	$("#tasksList").on('click', '.update', updateTasks);
+	// toggle complete checkbox
+	$('#complete').on('click', '.complete', checkBoxComplete);
+
 });
 
 // Get tasks and append
-function getTasks() {
+function getToDo() {
 	$.ajax({
 		type: 'GET',
 		url: '/tasks',
-		success: function (task) {
-			appendTasks(task);
+		success: function (toDo) {
+			appendTasks(toDo);
 		},
-		error: function () {
-			console.log('Database error');
+		error: function (error) {
+			console.log('Database error', error);
 		}
 	});
 }
@@ -27,20 +30,20 @@ function getTasks() {
 function submitToDo() {
 	event.preventDefault();
 
-	var newToDo = {};
+	var data = {};
 
-	$.each($('#addTaskForm').serializeArray(), function (i, field) {
-		newToDo[field.name] = field.value;
+	$(this).serializeArray().forEach(function (input) {
+		data[input.name] = input.value;
 	});
 
-	console.log('newToDo: ', newToDo);
+	console.log('data: ', data);
 
 	$.ajax({
 		type: 'POST',
 		url: '/tasks',
-		data: newToDo,
+		data: data,
 		success: function (response) {
-			getTasks();
+			getToDo();
 		},
 		error: function () {
 			console.log('tasks not posted');
@@ -56,9 +59,9 @@ function deleteTasks() {
 
 	$.ajax({
 		type: 'DELETE',
-		url: '/change/' + id,
+		url: '/tasks/' + id,
 		success: function (result) {
-			getTasks();
+			getToDo();
 		},
 		error: function (result) {
 			console.log('task not deleted.');
@@ -82,11 +85,11 @@ function updateTasks() {
 
 	$.ajax({
 		type: 'PUT',
-		url: '/change/' + id,
+		url: '/tasks/' + id,
 		data: tasks,
 		success: function (result) {
 			console.log('yo, you got updated');
-			getTasks();
+			getToDo();
 		},
 
 		error: function (result) {
@@ -96,10 +99,13 @@ function updateTasks() {
 } // end update function
 
 function appendTasks(tasks) {
-	$("#addToDo").empty();
+	var $toDoList = $('#toDoList');
+	var $completeList = $('#completeList');
+	$toDoList.empty();
+	$completeList.empty();
 
 	for (var i = 0; i < tasks.length; i++) {
-		$("#tasksList").append('<div class="tasks row"></div>');
+		$("#toDoList").append('<div class="tasks row"></div>');
 
 		$el = $('#toDoList').children().last();
 
