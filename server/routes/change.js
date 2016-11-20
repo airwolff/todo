@@ -5,9 +5,9 @@ var connectionString = 'postgres://localhost:5432/git_r_dun';
 
 // delete route
 router.delete('/:id', function (req, res) {
-	tasksID = req.params.id;
+	taskID = req.params.id;
 
-	console.log('tasks id to delete: ', tasksID);
+	console.log('tasks id to delete: ', taskID);
 
 	pg.connect(connectionString, function (err, client, done) {
 		if (err) {
@@ -16,7 +16,7 @@ router.delete('/:id', function (req, res) {
 		}
 
 		client.query(
-			'DELETE FROM tasks WHERE id = $1', [tasksID],
+			'DELETE FROM tasks WHERE id = $1', [taskID],
 			function (err, result) {
 				done();
 
@@ -31,10 +31,10 @@ router.delete('/:id', function (req, res) {
 
 // update tasks route
 router.put('/:id', function (req, res) {
-	tasksID = req.params.id;
-	tasks = req.body;
+	taskID = req.params.id;
+	changeTask = req.body;
 
-	console.log('updating tasks ', tasks);
+	console.log('updating changeTask ', changeTask);
 
 	pg.connect(connectionString, function (err, client, done) {
 		if (err) {
@@ -47,7 +47,7 @@ router.put('/:id', function (req, res) {
 			'UPDATE tasks SET task=$1, complete=$2' +
 			' WHERE id=$3',
 			// array of values to use in the query above
-      [tasks.task, tasks.complete, tasksID],
+      [changeTask.task, changeTask.complete, taskID],
 			function (err, result) {
 				if (err) {
 					console.log('update error: ', err);

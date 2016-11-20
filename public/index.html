@@ -11,8 +11,15 @@
 
     <body>
         <h1>Git R Done</h1>
-        <div id="toDoContainer">
-            <ul>
+        <form id="addTaskForm">
+            <div id="taskInput">
+                <label for="addToDo">Git r Dun!</label>
+                <input type="text" id="addToDo" name="addToDo">
+            </div>
+            <button type="button" id="submitTasks" name="submitTasks">add to list</button>
+        </form>
+        <div id="tasksList">
+            <ul id="toDoList">
             </ul>
         </div>
         <div id="doneContainer">

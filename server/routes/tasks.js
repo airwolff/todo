@@ -14,7 +14,7 @@ router.get('/', function (req, res) {
 			res.sendStatus(500);
 		}
 
-		client.query('SELECT * FROM tasks', function (err, result) {
+		client.query('SELECT * FROM task', function (err, result) {
 			done(); // closes the connection.
 
 			if (err) {
@@ -32,7 +32,7 @@ router.get('/', function (req, res) {
 router.post('/', function (req, res) {
 	var newTask = req.body;
 
-	console.log('new tasks insert body ' + req.body);
+	console.log('new tasks insert body ' + newTask);
 
 	pg.connect(connectionString, function (err, client, done) {
 		if (err) {
@@ -43,7 +43,7 @@ router.post('/', function (req, res) {
 		// create new tasks
 		client.query(
 			'INSERT INTO tasks (task, complete) ' +
-			'VALUES ($1, $2)', [tasks.title, tasks.complete],
+			'VALUES ($1, $2)', [newTask.title, newTask.complete],
 			function (err, result) {
 				done();
 

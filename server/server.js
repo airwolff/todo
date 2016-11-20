@@ -16,7 +16,7 @@ app.use('/change', change);
 
 // Catchall route
 app.get('/', function (req, res) {
-	res.sendFile(path.resolve('./server/public/views/index.html'));
+	res.sendFile(path.resolve('./public/index.html'));
 });
 
 app.use(express.static('./public'));

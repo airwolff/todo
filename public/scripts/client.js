@@ -1,12 +1,12 @@
 $(document).ready(function () {
-	getBooks();
+	getTasks();
 
-	// add a book
-	$('#addTask').on('click', addTask);
-	// delete a book
-	$("#taskList").on('click', '.delete', deleteTask);
-	// update a book
-	$("#taskList").on('click', '.update', updateTask);
+	// add tasks
+	$('#submitTasks').on('click', submitToDo);
+	// delete tasks
+	$("#tasksList").on('click', '.delete', deleteTasks);
+	// update tasks
+	$("#tasksList").on('click', '.update', updateTasks);
 });
 
 // Get tasks and append
@@ -14,8 +14,8 @@ function getTasks() {
 	$.ajax({
 		type: 'GET',
 		url: '/tasks',
-		success: function (tasks) {
-			appendTask(task);
+		success: function (task) {
+			appendTasks(task);
 		},
 		error: function () {
 			console.log('Database error');
@@ -24,34 +24,34 @@ function getTasks() {
 	});
 }
 
-// add task to DB
-function addTask() {
+// add tasks to DB
+function submitToDo() {
 	event.preventDefault();
 
-	var task = {};
+	var newToDo = {};
 
-	$.each($('#taskInput').serializeArray(), function (i, field) {
-		task[field.name] = field.value;
+	$.each($('#addTaskForm').serializeArray(), function (i, field) {
+		newToDo[field.name] = field.value;
 	});
 
-	console.log('task: ', task);
+	console.log('newToDo: ', newToDo);
 
 	$.ajax({
 		type: 'POST',
 		url: '/tasks',
-		data: book,
+		data: newToDo,
 		success: function (response) {
 			getTasks();
 		},
 		error: function () {
-			console.log('task not posted');
+			console.log('tasks not posted');
 		}
 	});
 } // end add function
 
 
 // delete tasks
-function deleteTask() {
+function deleteTasks() {
 	var id = $(this).parent().data('id');
 	console.log(id);
 
@@ -59,52 +59,63 @@ function deleteTask() {
 		type: 'DELETE',
 		url: '/tasks/' + id,
 		success: function (result) {
-			getBooks();
+			getTasks();
 		},
 		error: function (result) {
-			console.log('task not deleted.');
+			console.log('tasks not deleted.');
 		}
 	});
 } // end delete function
 
-function updateTask() {
+function updateTasks() {
 	var id = $(this).parent().data('id');
 	console.log(id);
 
-	var task = {};
+	var tasks = {};
+
 	var fields = $(this).parent().children().serializeArray();
+
 	fields.forEach(function (field) {
-		task[field.name] = field.value;
+		tasks[field.name] = field.value;
 	});
-	console.log(task);
+
+	console.log(tasks);
 
 	$.ajax({
 		type: 'PUT',
 		url: '/change/' + id,
-		data: task,
+		data: tasks,
 		success: function (result) {
 			console.log('yo, you got updated');
-			getBooks();
+			getTasks();
 		},
+
 		error: function (result) {
-			console.log('task not updated!');
+			console.log('tasks not updated!');
 		}
 	});
 } // end update function
 
-function appendTask(task) {
-	$("#taskList").empty();
+function appendTasks(tasks) {
+	$("#addToDo").empty();
 
-	for (var i = 0; i < task.length; i++) {
-		$("#taskList").append('<div class="row book"></div>');
-		$el = $('#taskList').children().last();
-		var task = books[i];
-		$el.data('id', book.id);
-		console.log("Date from DB: ", book.published);
-		$el.append('<input type="text" name="task" value="' + tasks.task + '" />');
-		$el.append('<input type="text" name="author" value="' + book.author + '" />');
+	for (var i = 0; i < tasks.length; i++) {
+		$("#tasksList").append('<div class="tasks row"></div>');
+
+		$el = $('#toDoList').children().last();
+
+		var notDone = tasks[i];
+
+		$el.data('id', notDone.id);
+
+		console.log("task from DB: ", notDone.task);
+
+		$el.append('<input type="text" name="tasks" value="' + notDone.task + '" />');
+
+		$el.append('<input type="checkbox" id="completeCheckBox" value="' + notDone.complete + '" />');
 
 		$el.append('<button class="update">Update</button>');
+
 		$el.append('<button class="delete">Delete</button>');
 	}
 }
